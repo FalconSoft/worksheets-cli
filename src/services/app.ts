@@ -27,7 +27,9 @@ export abstract class AppService {
   }
 
   protected getFilePath(link: AppLink): string {
-    return `ws-apps/${this.ownerName}/${this.appName}/${link.folder ?? ''}/${link.name}.${link.contentType}`.replace(/\/\//g, '/');
+    const p = `ws-apps/${this.ownerName}/${this.appName}/${link.folder ?? ''}/${link.name}.${link.contentType}`;
+    const rootPath = path.resolve(require.main.path, '../');
+    return path.relative(rootPath, p).normalize();
   }
 
   protected getHashCode(content: string): string {
