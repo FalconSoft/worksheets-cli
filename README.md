@@ -18,12 +18,12 @@ node ./dist/index.js auth -u=Test1 -p=******
 ### Pull
 ```
 node ./dist/index.js pull
-node ./dist/index.js pull --owner=Test1 --appName=NewAppToDel2
-node ./dist/index.js pull -o=Test1 -a=NewAppToDel2
+node ./dist/index.js pull --app=Test1/NewAppToDel2
+node ./dist/index.js pull -a=Test1/NewAppToDel2
 ```
 
 ### Push
 ```
-node ./dist/index.js push --owner=Test1 --appName=NewAppToDel2
-node ./dist/index.js push -o=Test1 -a=NewAppToDel2
+node ./dist/index.js push --app=Test1/NewAppToDel2
+node ./dist/index.js push -a=Test1/NewAppToDel2
 ```

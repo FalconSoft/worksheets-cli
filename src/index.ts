@@ -3,6 +3,7 @@ import yargs, { Argv } from 'yargs';
 import { authService } from './services/auth';
 import { appPullService } from './services/app-pull';
 import { appPushService } from './services/app-push';
+import { configService } from './services/config';
 
 console.log('Worksheets CLI');
 
@@ -18,21 +19,13 @@ async function main() {
       alias: 'p',
       hidden: true,
       type: 'string'
-    })).command('pull', "Pull application.", (yargs: Argv) => yargs.option('owner', {
-      alias: 'o',
-      describe: "Ownername",
-      type: 'string'
-    }).option('appName', {
+    })).command('pull', "Pull application.", (yargs: Argv) => yargs.option('app', {
       alias: 'a',
-      describe: 'Application name',
+      describe: 'Application name (Owner/AppName)',
       type: 'string'
-    })).command('push', "Push application.", (yargs: Argv) => yargs.option('owner', {
-      alias: 'o',
-      describe: "Ownername",
-      type: 'string'
-    }).option('appName', {
+    })).command('push', "Push application.", (yargs: Argv) => yargs.option('app', {
       alias: 'a',
-      describe: 'Application name',
+      describe: 'Application name (Owner/AppName)',
       type: 'string'
     })).argv;
 
@@ -46,7 +39,8 @@ async function main() {
     case 'pull': {
       const isAuth = await authService.authenticate();
       if (isAuth) {
-        await appPullService.loadApp(argv.owner, argv.appName);
+        const config = await getConfig(argv);
+        await appPullService.loadApp(...config);
       } else {
         console.log('Login to be able to pull apps.');
       }
@@ -55,7 +49,8 @@ async function main() {
     case 'push': {
       const isAuth = await authService.authenticate();
       if (isAuth) {
-        await appPushService.pushApp(argv.owner, argv.appName);
+        const config = await getConfig(argv);
+        await appPushService.pushApp(...config);
       } else {
         console.log('Login to be able to push apps.');
       }
@@ -63,6 +58,18 @@ async function main() {
     }
   }
   process.exit()
+}
+
+async function getConfig(argv: any): Promise<[string, string]> {
+  if (!argv.app) {
+    const config = await configService.get();
+    console.log(`Application: ${config.owner}/${config.app}`);
+    return [config.owner, config.app];
+  } else {
+    const [owner, app] = argv.app.split('/');
+    await configService.save({owner, app});
+    return [owner, app]
+  }
 }
 
 main();

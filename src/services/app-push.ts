@@ -80,10 +80,10 @@ class AppPushservice extends AppService {
     }));
   }
 
-  private async getAppLinkWithContent(dir:string, path: string, hashes: PathHash): Promise<AppLink> {
-    let folder = removeStartingSlash(dir.replace(this.appDirPath, ''));
-    let [name, ...extention] = path.replace(dir, '').split('.');
-    const content = (await fs.readFile(path)).toString();
+  private async getAppLinkWithContent(dir:string, fPath: string, hashes: PathHash): Promise<AppLink> {
+    let folder = removeStartingSlash(dir.replace(this.appDirPath, '')).replace(/\\/g, '/');
+    let [name, ...extention] = path.basename(fPath).split('.');
+    const content = (await fs.readFile(fPath)).toString();
     const appLink: AppLink = {
       name: removeStartingSlash(name),
       folder,

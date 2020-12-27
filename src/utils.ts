@@ -13,7 +13,7 @@ export async function createDirectory(filePath: string): Promise<string> {
 }
 
 export function removeStartingSlash(str: string): string {
-  if (str.startsWith('/')) {
+  if (str.startsWith('/') || str.startsWith('\\')) {
     str = str.slice(1);
   }
   return str;
