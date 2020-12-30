@@ -4,10 +4,12 @@ import path from 'path';
 import axios from 'axios';
 import { Credentials, LoginResponse, User } from '../models/auth.interfaces';
 import { createDirectory } from '../utils';
+import { CONFIG_DIRNAME } from '../constants';
+import { configService } from './config';
 
 class AuthService {
-  private readonly SECURITY_URL = `${process.env.BASE_URL}/api/security`;
-  private readonly TOKEN_PATH = path.resolve('./ws-config/token.txt');
+  private readonly SECURITY_URL = `/api/security`;
+  private readonly TOKEN_PATH = path.resolve(`./${CONFIG_DIRNAME}/token.txt`);
   private token: string;
   async authenticate(): Promise<boolean> {
     const isAuth = await this.isAuth();
@@ -17,7 +19,6 @@ class AuthService {
 
     return this.login();
   }
-
 
   getAuthHeaders(): {[key: string]: string} {
     return {
@@ -59,7 +60,8 @@ class AuthService {
   async login(username?: string, password?: string): Promise<boolean> {
     const cred = this.getCredentials(username, password);
     try {
-      const res = await axios.post<LoginResponse>(`${this.SECURITY_URL}/authenticate`, cred);
+      const baseUrl = await configService.get('baseUrl');
+      const res = await axios.post<LoginResponse>(`${baseUrl}${this.SECURITY_URL}/authenticate`, cred);
       if (res.data.token) {
         this.printUser(res.data.user);
         await createDirectory(this.TOKEN_PATH);
@@ -76,7 +78,8 @@ class AuthService {
 
   private async isTokenValid(): Promise<boolean> {
     try {
-      const res = await axios.get<User>(`${this.SECURITY_URL}/user`, {
+      const baseUrl = await configService.get('baseUrl');
+      const res = await axios.get<User>(`${baseUrl}${this.SECURITY_URL}/user`, {
         headers: this.getAuthHeaders()
       });
       this.printUser(res.data);

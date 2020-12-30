@@ -1,4 +1,6 @@
 export interface CliConfig {
-  app: string;
-  owner: string;
+  [key: string]: string;
+  app?: string;
+  owner?: string;
+  baseUrl?: string;
 }

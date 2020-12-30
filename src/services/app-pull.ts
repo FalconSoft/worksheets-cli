@@ -1,4 +1,3 @@
-import path from 'path';
 import axios from 'axios';
 import { ContentInfo, AppLink, AppContentInfo } from '../models/app.interfaces';
 import { authService } from './auth';
@@ -7,15 +6,12 @@ import { writeFile } from 'fs/promises';
 import { AppService } from './app';
 
 class AppPullservice extends AppService {
-  constructor() {
-    super();
-    createDirectory(this.hashFilePath);
-  }
-
   async loadApp(ownerName?: string, appName?: string): Promise<void> {
     this.setAppInfo(ownerName, appName);
+    await createDirectory(this.hashFilePath);
     await removeDir(this.appDirPath);
-    const url = `${this.APP_DEF_URL}/app-links/${this.ownerName}/${this.appName}`;
+    const appDefUrl = await this.getAppDefUrl();
+    const url = `${appDefUrl}/app-links/${this.ownerName}/${this.appName}`;
     try {
       const res = await axios.get<ContentInfo[]>(url, {
         headers: authService.getAuthHeaders()
@@ -36,7 +32,8 @@ class AppPullservice extends AppService {
   }
 
   private async loadFile(c: ContentInfo): Promise<AppLink> {
-    const url = `${this.APP_DEF_URL}/get-app-content`;
+    const appDefUrl = await this.getAppDefUrl();
+    const url = `${appDefUrl}/get-app-content`;
     const data: AppContentInfo = {
       contentType: c.contentType,
       folder: c.folder,
@@ -51,12 +48,12 @@ class AppPullservice extends AppService {
   }
 
   private async saveFile(link: AppLink) {
-    const path = this.getFilePath(link);
+    const path = this.getAbsFilePath(link);
     try {
       await createDirectory(path);
       await writeFile(path, link.content || '');
       console.log(`File loaded: ${path}`);
-      return {[path]: {
+      return {[this.getFilePath(link)]: {
         hash: this.getHashCode(link.content),
         contentId: link.contentId
       }};

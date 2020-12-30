@@ -18,27 +18,23 @@ class AppPushservice extends AppService {
     try {
       const files = (await this.getLocalAppFiles()).flat(Infinity) as AppLink[];
       const hashes = await this.getHashCodes();
-
       await this.deleteFiles(files, hashes);
-
       const filesToPush = files.filter(f => {
         const p = this.getFilePath(f);
         return hashes[p]?.hash !== this.getHashCode(f.content);
       });
-
       await Promise.all(filesToPush.map(async fP => {
         const pathHash = await this.saveFile(fP);
         const filePath = this.getFilePath(fP);
         const f = files.find(f => filePath === this.getFilePath(f));
         f.contentId = pathHash[filePath].contentId;
       }));
-
       await this.saveHashCodes(files.map(f => ({[this.getFilePath(f)]: {
         hash: this.getHashCode(f.content),
         contentId: f.contentId
       }})));
-
-      console.log(`Application ${this.ownerName}.${this.appName} loaded (${this.APP_DEF_URL}).`)
+      const appDefUrl = await this.getAppDefUrl();
+      console.log(`Application ${this.ownerName}.${this.appName} loaded (${appDefUrl}).`)
 
     } catch (e) {
       console.log(e.message);
@@ -54,7 +50,8 @@ class AppPushservice extends AppService {
   }
 
   private async deleteFile(link: AppLink): Promise<number> {
-    const url = `${this.APP_DEF_URL}/delete-app-content`;
+    const appDefUrl = await this.getAppDefUrl();
+    const url = `${appDefUrl}/delete-app-content`;
     const res = await axios.post<number>(url, {
       ...link,
       appOwnerName: this.ownerName,
@@ -113,7 +110,8 @@ class AppPushservice extends AppService {
   }
 
   private async saveFile(link: AppLink): Promise<PathHash> {
-    const url = `${this.APP_DEF_URL}/save-app-content`;
+    const appDefUrl = await this.getAppDefUrl();
+    const url = `${appDefUrl}/save-app-content`;
     const appLink = this.getSaveAppLink(link);
     try {
       const res = await axios.post<number>(url, appLink, {
