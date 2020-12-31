@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'fs/promises';
 import readline from 'readline-sync';
-import path from 'path';
+import path, { basename } from 'path';
 import axios from 'axios';
 import { Credentials, LoginResponse, User } from '../models/auth.interfaces';
 import { createDirectory } from '../utils';
@@ -58,9 +58,12 @@ class AuthService {
   }
 
   async login(username?: string, password?: string): Promise<boolean> {
-    const cred = this.getCredentials(username, password);
     try {
       const baseUrl = await configService.get('baseUrl');
+      if (!baseUrl) {
+        throw new Error('Set baseUrl to work with worksheets-cli!');
+      }
+      const cred = this.getCredentials(username, password);
       const res = await axios.post<LoginResponse>(`${baseUrl}${this.SECURITY_URL}/authenticate`, cred);
       if (res.data.token) {
         this.printUser(res.data.user);
@@ -71,7 +74,7 @@ class AuthService {
       }
       return false;
     } catch (e) {
-      console.log(e.message);
+      console.warn(e.message);
       return false;
     }
   }

@@ -15,6 +15,11 @@ async function main() {
 
   const argComangs = argv._ as string[];
   const useMessage = `Use one of the commands: ${commands.join(', ')}`;
+  if (argComangs.length === 0 && argv.version) {
+    const version = require('../package.json').version;
+    console.log(version);
+    process.exit();
+  }
   if (argComangs.length !== 1 || !commands.includes(argComangs[0])) {
     console.log(useMessage);
     process.exit();
@@ -29,17 +34,16 @@ async function main() {
   process.exit()
 }
 
-async function getConfig(argv: any): Promise<[string, string]> {
+async function getConfig(argv: any): Promise<CliConfig> {
   if (!argv.app) {
     const config = await configService.get();
     if (config.owner && config.app) {
       console.log(`Application: ${config.owner}/${config.app}`);
     }
-    return [config.owner, config.app];
+    return config;
   } else {
     const [owner, app] = argv.app.split('/');
-    await configService.save({ owner, app });
-    return [owner, app]
+    return await configService.save({ owner, app });
   }
 }
 
@@ -47,7 +51,7 @@ async function pull(argv: any): Promise<void> {
   const isAuth = await authService.authenticate();
   if (isAuth) {
     const config = await getConfig(argv);
-    await appPullService.loadApp(...config);
+    await appPullService.loadApp(config.owner, config.app);
   } else {
     console.log('Login to be able to pull apps.');
   }
@@ -57,7 +61,7 @@ async function push(argv: any): Promise<void> {
   const isAuth = await authService.authenticate();
   if (isAuth) {
     const config = await getConfig(argv);
-    await appPushService.pushApp(...config);
+    await appPushService.pushApp(config.owner, config.app);
   } else {
     console.log('Login to be able to push apps.');
   }
@@ -65,6 +69,11 @@ async function push(argv: any): Promise<void> {
 
 function getArgv() {
   return yargs
+    .option('version', {
+      alias: 'v',
+      description: 'Application version',
+      type: 'boolean'
+    })
     .command('auth', "Authenticate.", (yargs: Argv) => yargs.option('username', {
       alias: 'u',
       describe: "Username in worksheet.systems",
@@ -105,4 +114,8 @@ async function config(argv: any): Promise<void> {
   console.log('Configurations updated.');
 }
 
-main();
+try {
+  main();
+} catch (e) {
+  console.log(e.message);
+}

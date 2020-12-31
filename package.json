@@ -1,11 +1,13 @@
 {
   "name": "worksheets-cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Worksheets CLI",
   "main": "./lib/index.ts",
+  "bin": "./bin/worksheets-cli",
   "typings": "./lib/index.d.ts",
   "files": [
-    "lib"
+    "lib",
+    "bin"
   ],
   "scripts": {
     "build": "tsc --project ./",

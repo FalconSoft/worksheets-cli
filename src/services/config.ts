@@ -8,9 +8,17 @@ class ConfigService {
   private CONFIG_FILE_PATH = path.resolve(process.cwd(), `${CONFIG_DIRNAME}/config.json`);
   private _config: CliConfig;
 
-  async save(config: CliConfig): Promise<void> {
+  async save(config: CliConfig): Promise<CliConfig> {
     const prev = await this.get();
-    await writeFile(this.CONFIG_FILE_PATH, JSON.stringify({...prev, ...config}, null, '\t'));
+    const c = {...prev, ...config};
+    try {
+      await writeFile(this.CONFIG_FILE_PATH, JSON.stringify(c, null, '\t'));
+      this._config = c;
+      return c;
+    } catch (e) {
+      console.error(e);
+    }
+
   }
 
   async get(): Promise<CliConfig>;
