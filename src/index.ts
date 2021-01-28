@@ -6,7 +6,7 @@ import { appPushService } from './services/app-push';
 import { configService } from './services/config';
 import { CliConfig } from './models/config.interface';
 
-console.log('Worksheets CLI');
+console.log('Worksheets CLI (c) 2021 FalconSoft Ltd. All rights reserved.');
 
 const commands = ['auth', 'pull', 'push', 'config'];
 

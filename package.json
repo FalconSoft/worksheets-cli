@@ -1,6 +1,6 @@
 {
   "name": "worksheets-cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Worksheets CLI",
   "main": "./lib/index.ts",
   "bin": "./bin/worksheets-cli",
@@ -11,6 +11,8 @@
   ],
   "scripts": {
     "build": "tsc --project ./",
+    "publish": "npm run build && npm publish",
+
     "dev": "tsc && node lib/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,7 +24,7 @@
     "worksheets"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "BSD3",
   "bugs": {
     "url": "https://github.com/FalconSoft/worksheets-cli/issues"
   },
