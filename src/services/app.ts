@@ -26,16 +26,16 @@ export abstract class AppService {
   }
 
   get appDir(): string {
-    return `${APP_DIRNAME}/${this.ownerName}/${this.appName}`;
+    return `${APP_DIRNAME}`;
   }
 
   protected getFilePath(link: AppLink): string {
-    const p = `${APP_DIRNAME}/${this.ownerName}/${this.appName}/${link.folder ?? ''}/${link.name}.${link.contentType}`;
+    const p = `${APP_DIRNAME}/${link.folder ?? ''}/${link.name}.${link.contentType}`;
     return path.relative(process.cwd(), path.resolve(process.cwd(), p).normalize());
   }
 
   protected getAbsFilePath(link: AppLink): string {
-    const p = `${APP_DIRNAME}/${this.ownerName}/${this.appName}/${link.folder ?? ''}/${link.name}.${link.contentType}`;
+    const p = `${APP_DIRNAME}/${link.folder ?? ''}/${link.name}.${link.contentType}`;
     return path.resolve(process.cwd(), p).normalize();
   }
 
