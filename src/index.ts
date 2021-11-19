@@ -117,5 +117,5 @@ async function config(argv: any): Promise<void> {
 try {
   main();
 } catch (e) {
-  console.log(e.message);
+  console.log((e as any).message);
 }

@@ -37,7 +37,7 @@ class AppPushservice extends AppService {
       console.log(`Application ${this.ownerName}.${this.appName} loaded (${appDefUrl}).`)
 
     } catch (e) {
-      console.log(e.message);
+      console.log((e as any).message);
     }
   }
 
@@ -125,7 +125,7 @@ class AppPushservice extends AppService {
         contentId: res.data
       }};
     } catch (e) {
-      console.log(e.message);
+      console.log((e as any).message);
     }
   }
 

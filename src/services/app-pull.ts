@@ -27,7 +27,7 @@ class AppPullservice extends AppService {
       console.log(`Application ${this.ownerName}.${this.appName} loaded (${this.appDirPath}).`)
 
     } catch (e) {
-      console.log(e.message);
+      console.log((e as any).message);
     }
   }
 

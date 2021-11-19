@@ -5,7 +5,7 @@ import readline from 'readline-sync';
 import { AppLink, PathHash } from '../models/app.interfaces';
 import { createDirectory } from '../utils';
 import { APP_DIRNAME, CONFIG_DIRNAME } from '../constants';
-import { configService } from './config';
+import { configService, DEFAULT_BASE_URL } from './config';
 
 
 export abstract class AppService {

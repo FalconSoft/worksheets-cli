@@ -8,7 +8,7 @@ import { CONFIG_DIRNAME } from '../constants';
 import { configService } from './config';
 
 class AuthService {
-  private readonly SECURITY_URL = `/api/security`;
+  private readonly SECURITY_URL = `/authentication`;
   private readonly TOKEN_PATH = path.resolve(`./${CONFIG_DIRNAME}/token.txt`);
   private token: string;
   async authenticate(): Promise<boolean> {
@@ -74,7 +74,7 @@ class AuthService {
       }
       return false;
     } catch (e) {
-      console.warn(e.message);
+      console.warn((e as any).message);
       return false;
     }
   }

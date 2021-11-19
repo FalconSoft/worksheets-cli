@@ -35,6 +35,19 @@ worksheets-cli push -a=Test1/NewAppToDel2
 
 ### Config
 ```
-worksheets-cli config --baseUrl=worksheets.systems/api
+worksheets-cli config --baseUrl=https://api.worksheet.systems
 worksheets-cli config -a=Test1/NewAppToDel2
 ```
+
+### Source Code Dev Build
+
+```
+npm run build
+```
+### Run dev version
+
+```
+node ../../worksheets-cli/bin/worksheets-cli --help
+```
+
+> Do NOT run this app in a source folder (./bin/worksheets-cli). It will delete all source files
