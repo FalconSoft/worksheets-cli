@@ -6,6 +6,7 @@
 /out-tsc
 /release
 /lib
+/bin
 
 # dependencies
 /node_modules

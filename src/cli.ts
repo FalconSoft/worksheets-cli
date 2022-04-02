@@ -11,7 +11,7 @@ console.log('Worksheets CLI (c) 2021 FalconSoft Ltd. All rights reserved.');
 const commands = ['auth', 'pull', 'push', 'config'];
 
 async function main() {
-  let argv = getArgv();
+  let argv = getArgv() as any;
 
   const argComangs = argv._ as string[];
   const useMessage = `Use one of the commands: ${commands.join(', ')}`;

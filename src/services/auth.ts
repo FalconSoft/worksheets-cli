@@ -26,6 +26,10 @@ class AuthService {
     }
   }
 
+  getCurrentToken(): string {
+    return this.token;
+  }
+
   private async isAuth(): Promise<boolean> {
     const token = await this.getToken();
     if (token) {
