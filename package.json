@@ -1,6 +1,6 @@
 {
   "name": "worksheets-cli",
-  "version": "3.0.2",
+  "version": "3.0.5",
   "description": "Worksheets CLI",
   "main": "./lib/public-api.js",
   "bin": "./bin/worksheets-cli",

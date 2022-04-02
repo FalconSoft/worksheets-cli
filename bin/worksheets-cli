@@ -213,7 +213,7 @@ var configService = new ConfigService();var AuthService = /** @class */ (functio
     };
     AuthService.prototype.getAuthHeaders = function () {
         return {
-            Authorization: "Bearer ".concat(this.token)
+            Authorization: "Bearer ".concat(this.token),
         };
     };
     AuthService.prototype.getCurrentToken = function () {
@@ -257,7 +257,7 @@ var configService = new ConfigService();var AuthService = /** @class */ (functio
                         return [2 /*return*/, this.token];
                     case 2:
                         _a.sent();
-                        console.log('Local token token does not exist. Please login.');
+                        console.log("Local token token does not exist. Please login.");
                         return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
@@ -265,10 +265,11 @@ var configService = new ConfigService();var AuthService = /** @class */ (functio
         });
     };
     AuthService.prototype.getCredentials = function (username, password) {
-        username = username !== null && username !== void 0 ? username : readline__default["default"].question('Enter Username:');
-        password = password !== null && password !== void 0 ? password : readline__default["default"].question('Enter Password:', {
-            hideEchoBack: true
-        });
+        username = username !== null && username !== void 0 ? username : readline__default["default"].question("Enter Username:");
+        password =
+            password !== null && password !== void 0 ? password : readline__default["default"].question("Enter Password:", {
+                hideEchoBack: true,
+            });
         return { username: username, password: password };
     };
     AuthService.prototype.login = function (username, password) {
@@ -278,11 +279,11 @@ var configService = new ConfigService();var AuthService = /** @class */ (functio
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 6, , 7]);
-                        return [4 /*yield*/, configService.get('baseUrl')];
+                        return [4 /*yield*/, configService.get("baseUrl")];
                     case 1:
                         baseUrl = _a.sent();
                         if (!baseUrl) {
-                            throw new Error('Set baseUrl to work with worksheets-cli!');
+                            throw new Error("Set baseUrl to work with worksheets-cli!");
                         }
                         cred = this.getCredentials(username, password);
                         return [4 /*yield*/, axios__default["default"].post("".concat(baseUrl).concat(this.SECURITY_URL, "/authenticate"), cred)];
@@ -308,6 +309,31 @@ var configService = new ConfigService();var AuthService = /** @class */ (functio
             });
         });
     };
+    AuthService.prototype.simpleLogin = function (username, password) {
+        return __awaiter(this, void 0, void 0, function () {
+            var baseUrl, res, e_3;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        baseUrl = DEFAULT_BASE_URL;
+                        return [4 /*yield*/, axios__default["default"].post("".concat(baseUrl).concat(this.SECURITY_URL, "/authenticate"), { username: username, password: password })];
+                    case 1:
+                        res = _a.sent();
+                        if (res.data.token) {
+                            this.token = res.data.token;
+                            return [2 /*return*/, res.data.token];
+                        }
+                        return [2 /*return*/, null];
+                    case 2:
+                        e_3 = _a.sent();
+                        console.warn(e_3.message);
+                        return [2 /*return*/, null];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
     AuthService.prototype.isTokenValid = function () {
         return __awaiter(this, void 0, void 0, function () {
             var baseUrl, res;
@@ -315,11 +341,11 @@ var configService = new ConfigService();var AuthService = /** @class */ (functio
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, configService.get('baseUrl')];
+                        return [4 /*yield*/, configService.get("baseUrl")];
                     case 1:
                         baseUrl = _a.sent();
                         return [4 /*yield*/, axios__default["default"].get("".concat(baseUrl).concat(this.SECURITY_URL, "/user"), {
-                                headers: this.getAuthHeaders()
+                                headers: this.getAuthHeaders(),
                             })];
                     case 2:
                         res = _a.sent();
@@ -327,7 +353,7 @@ var configService = new ConfigService();var AuthService = /** @class */ (functio
                         return [2 /*return*/, true];
                     case 3:
                         _a.sent();
-                        console.log('Local token token is invalid. Please login');
+                        console.log("Local token token is invalid. Please login");
                         return [2 /*return*/, false];
                     case 4: return [2 /*return*/];
                 }

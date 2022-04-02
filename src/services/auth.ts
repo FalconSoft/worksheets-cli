@@ -1,11 +1,11 @@
-import { readFile, writeFile } from 'fs/promises';
-import readline from 'readline-sync';
-import path, { basename } from 'path';
-import axios from 'axios';
-import { Credentials, LoginResponse, User } from '../models/auth.interfaces';
-import { createDirectory } from '../utils';
-import { CONFIG_DIRNAME } from '../constants';
-import { configService } from './config';
+import { readFile, writeFile } from "fs/promises";
+import readline from "readline-sync";
+import path, { basename } from "path";
+import axios from "axios";
+import { Credentials, LoginResponse, User } from "../models/auth.interfaces";
+import { createDirectory } from "../utils";
+import { CONFIG_DIRNAME } from "../constants";
+import { configService, DEFAULT_BASE_URL } from "./config";
 
 class AuthService {
   private readonly SECURITY_URL = `/authentication`;
@@ -20,10 +20,10 @@ class AuthService {
     return this.login();
   }
 
-  getAuthHeaders(): {[key: string]: string} {
+  getAuthHeaders(): { [key: string]: string } {
     return {
-      Authorization: `Bearer ${this.token}`
-    }
+      Authorization: `Bearer ${this.token}`,
+    };
   }
 
   getCurrentToken(): string {
@@ -49,26 +49,31 @@ class AuthService {
       this.token = token.toString();
       return this.token;
     } catch (e) {
-      console.log('Local token token does not exist. Please login.');
+      console.log("Local token token does not exist. Please login.");
     }
   }
 
   private getCredentials(username?: string, password?: string): Credentials {
-    username = username ?? readline.question('Enter Username:');
-    password = password ?? readline.question('Enter Password:', {
-      hideEchoBack: true
-    });
+    username = username ?? readline.question("Enter Username:");
+    password =
+      password ??
+      readline.question("Enter Password:", {
+        hideEchoBack: true,
+      });
     return { username, password };
   }
 
   async login(username?: string, password?: string): Promise<boolean> {
     try {
-      const baseUrl = await configService.get('baseUrl');
+      const baseUrl = await configService.get("baseUrl");
       if (!baseUrl) {
-        throw new Error('Set baseUrl to work with worksheets-cli!');
+        throw new Error("Set baseUrl to work with worksheets-cli!");
       }
       const cred = this.getCredentials(username, password);
-      const res = await axios.post<LoginResponse>(`${baseUrl}${this.SECURITY_URL}/authenticate`, cred);
+      const res = await axios.post<LoginResponse>(
+        `${baseUrl}${this.SECURITY_URL}/authenticate`,
+        cred
+      );
       if (res.data.token) {
         this.printUser(res.data.user);
         await createDirectory(this.TOKEN_PATH);
@@ -83,16 +88,37 @@ class AuthService {
     }
   }
 
+  async simpleLogin(
+    username?: string,
+    password?: string
+  ): Promise<string | null> {
+    try {
+      const baseUrl = DEFAULT_BASE_URL;
+      const res = await axios.post<LoginResponse>(
+        `${baseUrl}${this.SECURITY_URL}/authenticate`,
+        { username, password }
+      );
+      if (res.data.token) {
+        this.token = res.data.token;
+        return res.data.token;
+      }
+      return null;
+    } catch (e) {
+      console.warn((e as any).message);
+      return null;
+    }
+  }
+
   private async isTokenValid(): Promise<boolean> {
     try {
-      const baseUrl = await configService.get('baseUrl');
+      const baseUrl = await configService.get("baseUrl");
       const res = await axios.get<User>(`${baseUrl}${this.SECURITY_URL}/user`, {
-        headers: this.getAuthHeaders()
+        headers: this.getAuthHeaders(),
       });
       this.printUser(res.data);
       return true;
     } catch (e) {
-      console.log('Local token token is invalid. Please login');
+      console.log("Local token token is invalid. Please login");
       return false;
     }
   }
