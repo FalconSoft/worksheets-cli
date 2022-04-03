@@ -2,6 +2,9 @@ import typescript from 'rollup-plugin-typescript2';
 
 const pkg = require('./package.json');
 
+const external = ['axios', 'sql-data-api', 'fs/promises', 'readline-sync', 'path', 'jspython-interpreter',
+'datapipe-js', 'datapipe-js/string', 'datapipe-js/utils', 'datapipe-js/array', 'rimraf', 'rxjs',];
+
 export default [{
   input: 'src/cli.ts',
   output: {
@@ -11,9 +14,15 @@ export default [{
     compact: true,
     banner: '#!/usr/bin/env node'
   },
+  external: [...external, 'yargs', 'crypto-js/md5'],
   plugins: [
     typescript({
-      clean: true
+      clean: true,
+      tsconfigOverride: {
+        compilerOptions: {
+          declaration:false
+        }
+      }
     })
   ]
 }, {
@@ -25,6 +34,7 @@ export default [{
       format: 'cjs'
     }
   ],
+  external,
   plugins: [
     typescript({
       clean: true

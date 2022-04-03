@@ -1,6 +1,6 @@
 {
   "name": "worksheets-cli",
-  "version": "3.0.5",
+  "version": "3.1.0",
   "description": "Worksheets CLI",
   "main": "./lib/public-api.js",
   "bin": "./bin/worksheets-cli",
@@ -43,7 +43,7 @@
     "axios": "^0.26.1",
     "crypto-js": "^4.1.1",
     "datapipe-js": "^0.3.21",
-    "dotenv": "^8.2.0",
+    "dotenv": "^16.0.0",
     "jspython-interpreter": "^2.1.7",
     "readline-sync": "^1.4.10",
     "rimraf": "^3.0.2",
