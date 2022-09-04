@@ -13,33 +13,6 @@ LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
-/* global Reflect, Promise */
-
-var extendStatics = function(d, b) {
-    extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-    return extendStatics(d, b);
-};
-
-function __extends(d, b) {
-    if (typeof b !== "function" && b !== null)
-        throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-    extendStatics(d, b);
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-var __assign = function() {
-    __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 
 function __awaiter(thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -49,54 +22,16 @@ function __awaiter(thisArg, _arguments, P, generator) {
         function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-}
-
-function __generator(thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
 }function createDirectory(filePath) {
-    return __awaiter(this, void 0, void 0, function () {
-        var dirname;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    dirname = path__default["default"].dirname(filePath);
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, fs__default["default"].access(dirname)];
-                case 2:
-                    _a.sent();
-                    return [2 /*return*/, dirname];
-                case 3:
-                    _a.sent();
-                    return [2 /*return*/, fs__default["default"].mkdir(dirname, { recursive: true })];
-                case 4: return [2 /*return*/];
-            }
-        });
+    return __awaiter(this, void 0, void 0, function* () {
+        var dirname = path__default["default"].dirname(filePath);
+        try {
+            yield fs__default["default"].access(dirname);
+            return dirname;
+        }
+        catch (e) {
+            return fs__default["default"].mkdir(dirname, { recursive: true });
+        }
     });
 }
 function removeStartingSlash(str) {
@@ -106,696 +41,420 @@ function removeStartingSlash(str) {
     return str;
 }
 function removeDir(path) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (resolve, reject) {
-                    rimraf__default["default"](path, function (e) {
-                        if (e) {
-                            reject();
-                        }
-                        else {
-                            resolve();
-                        }
-                    });
-                })];
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve, reject) => {
+            rimraf__default["default"](path, e => {
+                if (e) {
+                    reject();
+                }
+                else {
+                    resolve();
+                }
+            });
         });
     });
-}var APP_DIRNAME = 'src';
-var CONFIG_DIRNAME = '.ws';var DEFAULT_BASE_URL = "https://api.worksheet.systems";
-var ConfigService = /** @class */ (function () {
-    function ConfigService() {
-        this.CONFIG_FILE_PATH = path__default["default"].resolve(process.cwd(), "".concat(CONFIG_DIRNAME, "/config.json"));
+}const APP_DIRNAME = 'src';
+const CONFIG_DIRNAME = '.ws';const DEFAULT_BASE_URL = "https://api.worksheet.systems";
+class ConfigService {
+    constructor() {
+        this.CONFIG_FILE_PATH = path__default["default"].resolve(process.cwd(), `${CONFIG_DIRNAME}/config.json`);
     }
-    ConfigService.prototype.save = function (config) {
-        return __awaiter(this, void 0, void 0, function () {
-            var prev, c, e_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.get()];
-                    case 1:
-                        prev = _a.sent();
-                        c = __assign(__assign({}, prev), config);
-                        _a.label = 2;
-                    case 2:
-                        _a.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, fs.writeFile(this.CONFIG_FILE_PATH, JSON.stringify(c, null, '\t'))];
-                    case 3:
-                        _a.sent();
-                        this._config = c;
-                        return [2 /*return*/, c];
-                    case 4:
-                        e_1 = _a.sent();
-                        console.error(e_1);
-                        return [3 /*break*/, 5];
-                    case 5: return [2 /*return*/];
-                }
-            });
+    save(config) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const prev = yield this.get();
+            const c = Object.assign(Object.assign({}, prev), config);
+            try {
+                yield fs.writeFile(this.CONFIG_FILE_PATH, JSON.stringify(c, null, '\t'));
+                this._config = c;
+                return c;
+            }
+            catch (e) {
+                console.error(e);
+            }
         });
-    };
-    ConfigService.prototype.get = function (prop) {
-        return __awaiter(this, void 0, void 0, function () {
-            var f, config, value;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!!this._config) return [3 /*break*/, 5];
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 4, , 5]);
-                        return [4 /*yield*/, createDirectory(this.CONFIG_FILE_PATH)];
-                    case 2:
-                        _a.sent();
-                        return [4 /*yield*/, fs.readFile(this.CONFIG_FILE_PATH)];
-                    case 3:
-                        f = _a.sent();
-                        config = JSON.parse(f.toString());
-                        this._config = config;
-                        return [3 /*break*/, 5];
-                    case 4:
-                        _a.sent();
-                        this._config = {};
-                        return [3 /*break*/, 5];
-                    case 5:
-                        if (typeof prop === 'string') {
-                            value = this._config[prop];
-                            if (prop === 'baseUrl' && !value) {
-                                value = DEFAULT_BASE_URL;
-                            }
-                            return [2 /*return*/, value];
-                        }
-                        return [2 /*return*/, this._config];
-                }
-            });
-        });
-    };
-    return ConfigService;
-}());
-var configService = new ConfigService();var AuthService = /** @class */ (function () {
-    function AuthService() {
-        this.SECURITY_URL = "/authentication";
-        this.TOKEN_PATH = path__default["default"].resolve("./".concat(CONFIG_DIRNAME, "/token.txt"));
     }
-    AuthService.prototype.authenticate = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var isAuth;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.isAuth()];
-                    case 1:
-                        isAuth = _a.sent();
-                        if (isAuth) {
-                            return [2 /*return*/, true];
-                        }
-                        return [2 /*return*/, this.login()];
+    get(prop) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this._config) {
+                try {
+                    yield createDirectory(this.CONFIG_FILE_PATH);
+                    const f = yield fs.readFile(this.CONFIG_FILE_PATH);
+                    const config = JSON.parse(f.toString());
+                    this._config = config;
                 }
-            });
+                catch (e) {
+                    this._config = {};
+                }
+            }
+            if (typeof prop === 'string') {
+                let value = this._config[prop];
+                if (prop === 'baseUrl' && !value) {
+                    value = DEFAULT_BASE_URL;
+                }
+                return value;
+            }
+            return this._config;
         });
-    };
-    AuthService.prototype.getAuthHeaders = function () {
+    }
+}
+const configService = new ConfigService();class AuthService {
+    constructor() {
+        this.SECURITY_URL = `/authentication`;
+        this.TOKEN_PATH = path__default["default"].resolve(`./${CONFIG_DIRNAME}/token.txt`);
+    }
+    authenticate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const isAuth = yield this.isAuth();
+            if (isAuth) {
+                return true;
+            }
+            return this.login();
+        });
+    }
+    getAuthHeaders() {
         return {
-            Authorization: "Bearer ".concat(this.token),
+            Authorization: `Bearer ${this.token}`,
         };
-    };
-    AuthService.prototype.getCurrentToken = function () {
+    }
+    getCurrentToken() {
         return this.token;
-    };
-    AuthService.prototype.isAuth = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var token;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getToken()];
-                    case 1:
-                        token = _a.sent();
-                        if (token) {
-                            try {
-                                return [2 /*return*/, this.isTokenValid()];
-                            }
-                            catch (e) {
-                                return [2 /*return*/, false];
-                            }
-                        }
-                        else {
-                            return [2 /*return*/, false];
-                        }
-                        return [2 /*return*/];
+    }
+    isAuth() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const token = yield this.getToken();
+            if (token) {
+                try {
+                    return this.isTokenValid();
                 }
-            });
-        });
-    };
-    AuthService.prototype.getToken = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var token;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, fs.readFile(this.TOKEN_PATH)];
-                    case 1:
-                        token = _a.sent();
-                        this.token = token.toString();
-                        return [2 /*return*/, this.token];
-                    case 2:
-                        _a.sent();
-                        console.log("Local token token does not exist. Please login.");
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/];
+                catch (e) {
+                    return false;
                 }
-            });
+            }
+            else {
+                return false;
+            }
         });
-    };
-    AuthService.prototype.getCredentials = function (username, password) {
+    }
+    getToken() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const token = yield fs.readFile(this.TOKEN_PATH);
+                this.token = token.toString();
+                return this.token;
+            }
+            catch (e) {
+                console.log("Local token token does not exist. Please login.");
+            }
+        });
+    }
+    getCredentials(username, password) {
         username = username !== null && username !== void 0 ? username : readline__default["default"].question("Enter Username:");
         password =
             password !== null && password !== void 0 ? password : readline__default["default"].question("Enter Password:", {
                 hideEchoBack: true,
             });
-        return { username: username, password: password };
-    };
-    AuthService.prototype.login = function (username, password) {
-        return __awaiter(this, void 0, void 0, function () {
-            var baseUrl, cred, res, e_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 6, , 7]);
-                        return [4 /*yield*/, configService.get("baseUrl")];
-                    case 1:
-                        baseUrl = _a.sent();
-                        if (!baseUrl) {
-                            throw new Error("Set baseUrl to work with worksheets-cli!");
-                        }
-                        cred = this.getCredentials(username, password);
-                        return [4 /*yield*/, axios__default["default"].post("".concat(baseUrl).concat(this.SECURITY_URL, "/authenticate"), cred)];
-                    case 2:
-                        res = _a.sent();
-                        if (!res.data.token) return [3 /*break*/, 5];
-                        this.printUser(res.data.user);
-                        return [4 /*yield*/, createDirectory(this.TOKEN_PATH)];
-                    case 3:
-                        _a.sent();
-                        return [4 /*yield*/, fs.writeFile(this.TOKEN_PATH, res.data.token)];
-                    case 4:
-                        _a.sent();
-                        this.token = res.data.token;
-                        return [2 /*return*/, true];
-                    case 5: return [2 /*return*/, false];
-                    case 6:
-                        e_2 = _a.sent();
-                        console.warn(e_2.message);
-                        return [2 /*return*/, false];
-                    case 7: return [2 /*return*/];
+        return { username, password };
+    }
+    login(username, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const baseUrl = yield configService.get("baseUrl");
+                if (!baseUrl) {
+                    throw new Error("Set baseUrl to work with worksheets-cli!");
                 }
-            });
-        });
-    };
-    AuthService.prototype.simpleLogin = function (username, password) {
-        return __awaiter(this, void 0, void 0, function () {
-            var baseUrl, res, e_3;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        baseUrl = DEFAULT_BASE_URL;
-                        return [4 /*yield*/, axios__default["default"].post("".concat(baseUrl).concat(this.SECURITY_URL, "/authenticate"), { username: username, password: password })];
-                    case 1:
-                        res = _a.sent();
-                        if (res.data.token) {
-                            this.token = res.data.token;
-                            return [2 /*return*/, res.data.token];
-                        }
-                        return [2 /*return*/, null];
-                    case 2:
-                        e_3 = _a.sent();
-                        console.warn(e_3.message);
-                        return [2 /*return*/, null];
-                    case 3: return [2 /*return*/];
+                const cred = this.getCredentials(username, password);
+                const res = yield axios__default["default"].post(`${baseUrl}${this.SECURITY_URL}/authenticate`, cred);
+                if (res.data.token) {
+                    this.printUser(res.data.user);
+                    yield createDirectory(this.TOKEN_PATH);
+                    yield fs.writeFile(this.TOKEN_PATH, res.data.token);
+                    this.token = res.data.token;
+                    return true;
                 }
-            });
+                return false;
+            }
+            catch (e) {
+                console.warn(e.message);
+                return false;
+            }
         });
-    };
-    AuthService.prototype.isTokenValid = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var baseUrl, res;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, configService.get("baseUrl")];
-                    case 1:
-                        baseUrl = _a.sent();
-                        return [4 /*yield*/, axios__default["default"].get("".concat(baseUrl).concat(this.SECURITY_URL, "/user"), {
-                                headers: this.getAuthHeaders(),
-                            })];
-                    case 2:
-                        res = _a.sent();
-                        this.printUser(res.data);
-                        return [2 /*return*/, true];
-                    case 3:
-                        _a.sent();
-                        console.log("Local token token is invalid. Please login");
-                        return [2 /*return*/, false];
-                    case 4: return [2 /*return*/];
+    }
+    simpleLogin(username, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const baseUrl = DEFAULT_BASE_URL;
+                const res = yield axios__default["default"].post(`${baseUrl}${this.SECURITY_URL}/authenticate`, { username, password });
+                if (res.data.token) {
+                    this.token = res.data.token;
+                    return res.data.token;
                 }
-            });
+                return null;
+            }
+            catch (e) {
+                console.warn(e.message);
+                return null;
+            }
         });
-    };
-    AuthService.prototype.printUser = function (user) {
-        var firstName = user.firstName, lastName = user.lastName, email = user.email;
-        console.log("You authorized as ".concat(firstName, " ").concat(lastName, " (").concat(email, ")"));
-    };
-    return AuthService;
-}());
-var authService = new AuthService();var AppService = /** @class */ (function () {
-    function AppService() {
-        this.APP_DEF_URL = "/api/app-definitions";
+    }
+    isTokenValid() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const baseUrl = yield configService.get("baseUrl");
+                const res = yield axios__default["default"].get(`${baseUrl}${this.SECURITY_URL}/user`, {
+                    headers: this.getAuthHeaders(),
+                });
+                this.printUser(res.data);
+                return true;
+            }
+            catch (e) {
+                console.log("Local token token is invalid. Please login");
+                return false;
+            }
+        });
+    }
+    printUser(user) {
+        const { firstName, lastName, email } = user;
+        console.log(`You authorized as ${firstName} ${lastName} (${email})`);
+    }
+}
+const authService = new AuthService();class AppService {
+    constructor() {
+        this.APP_DEF_URL = `/api/app-definitions`;
         createDirectory(this.hashFilePath);
     }
-    Object.defineProperty(AppService.prototype, "hashFilePath", {
-        get: function () {
-            return "".concat(CONFIG_DIRNAME, "/").concat(this.ownerName, "-").concat(this.appName, "-hash.json");
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(AppService.prototype, "appDirPath", {
-        get: function () {
-            return path__default["default"].resolve(process.cwd(), this.appDir);
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(AppService.prototype, "appDir", {
-        get: function () {
-            return "".concat(APP_DIRNAME);
-        },
-        enumerable: false,
-        configurable: true
-    });
-    AppService.prototype.getFilePath = function (link) {
+    get hashFilePath() {
+        return `${CONFIG_DIRNAME}/${this.ownerName}-${this.appName}-hash.json`;
+    }
+    get appDirPath() {
+        return path__default["default"].resolve(process.cwd(), this.appDir);
+    }
+    get appDir() {
+        return `${APP_DIRNAME}`;
+    }
+    getFilePath(link) {
         var _a;
-        var p = "".concat(APP_DIRNAME, "/").concat((_a = link.folder) !== null && _a !== void 0 ? _a : '', "/").concat(link.name, ".").concat(link.contentType);
+        const p = `${APP_DIRNAME}/${(_a = link.folder) !== null && _a !== void 0 ? _a : ''}/${link.name}.${link.contentType}`;
         return path__default["default"].relative(process.cwd(), path__default["default"].resolve(process.cwd(), p).normalize());
-    };
-    AppService.prototype.getAbsFilePath = function (link) {
+    }
+    getAbsFilePath(link) {
         var _a;
-        var p = "".concat(APP_DIRNAME, "/").concat((_a = link.folder) !== null && _a !== void 0 ? _a : '', "/").concat(link.name, ".").concat(link.contentType);
+        const p = `${APP_DIRNAME}/${(_a = link.folder) !== null && _a !== void 0 ? _a : ''}/${link.name}.${link.contentType}`;
         return path__default["default"].resolve(process.cwd(), p).normalize();
-    };
-    AppService.prototype.getHashCode = function (content) {
-        var hash = md5__default["default"](content);
+    }
+    getHashCode(content) {
+        const hash = md5__default["default"](content);
         return hash.toString();
-    };
-    AppService.prototype.setAppInfo = function (ownerName, appName) {
+    }
+    setAppInfo(ownerName, appName) {
         this.ownerName = ownerName !== null && ownerName !== void 0 ? ownerName : readline__default["default"].question('Enter App Owner:');
-        this.appName = appName !== null && appName !== void 0 ? appName : readline__default["default"].question("Enter App Name (Owner=".concat(this.ownerName, "):"));
-    };
-    AppService.prototype.saveHashCodes = function (hashes) {
-        return __awaiter(this, void 0, void 0, function () {
-            var res;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        res = hashes.reduce(function (prev, item) {
-                            return __assign(__assign({}, prev), item);
-                        }, {});
-                        return [4 /*yield*/, fs.writeFile(this.hashFilePath, JSON.stringify(res, null, '\t'))];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    AppService.prototype.getHashCodes = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var hashesStr;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, fs.readFile(this.hashFilePath)];
-                    case 1:
-                        hashesStr = _a.sent();
-                        return [2 /*return*/, JSON.parse(hashesStr.toString())];
-                }
-            });
-        });
-    };
-    AppService.prototype.getAppDefUrl = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var baseUrl;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, configService.get('baseUrl')];
-                    case 1:
-                        baseUrl = _a.sent();
-                        return [2 /*return*/, "".concat(baseUrl).concat(this.APP_DEF_URL)];
-                }
-            });
-        });
-    };
-    return AppService;
-}());var AppPullservice = /** @class */ (function (_super) {
-    __extends(AppPullservice, _super);
-    function AppPullservice() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        this.appName = appName !== null && appName !== void 0 ? appName : readline__default["default"].question(`Enter App Name (Owner=${this.ownerName}):`);
     }
-    AppPullservice.prototype.loadApp = function (ownerName, appName) {
-        return __awaiter(this, void 0, void 0, function () {
-            var appDefUrl, url, res, links, hashes, e_1;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.setAppInfo(ownerName, appName);
-                        return [4 /*yield*/, createDirectory(this.hashFilePath)];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, removeDir(this.appDirPath)];
-                    case 2:
-                        _a.sent();
-                        return [4 /*yield*/, this.getAppDefUrl()];
-                    case 3:
-                        appDefUrl = _a.sent();
-                        url = "".concat(appDefUrl, "/app-links/").concat(this.ownerName, "/").concat(this.appName);
-                        _a.label = 4;
-                    case 4:
-                        _a.trys.push([4, 8, , 9]);
-                        return [4 /*yield*/, axios__default["default"].get(url, {
-                                headers: authService.getAuthHeaders()
-                            })];
-                    case 5:
-                        res = _a.sent();
-                        links = res.data;
-                        return [4 /*yield*/, Promise.all(links.map(function (l) { return __awaiter(_this, void 0, void 0, function () {
-                                var linkContent;
-                                return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0: return [4 /*yield*/, this.loadFile(l)];
-                                        case 1:
-                                            linkContent = _a.sent();
-                                            return [4 /*yield*/, this.saveFile(linkContent)];
-                                        case 2: return [2 /*return*/, _a.sent()];
-                                    }
-                                });
-                            }); }))];
-                    case 6:
-                        hashes = _a.sent();
-                        return [4 /*yield*/, this.saveHashCodes(hashes)];
-                    case 7:
-                        _a.sent();
-                        console.log("Application ".concat(this.ownerName, ".").concat(this.appName, " loaded (").concat(this.appDirPath, ")."));
-                        return [3 /*break*/, 9];
-                    case 8:
-                        e_1 = _a.sent();
-                        console.log(e_1.message);
-                        return [3 /*break*/, 9];
-                    case 9: return [2 /*return*/];
-                }
-            });
+    saveHashCodes(hashes) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = hashes.reduce((prev, item) => {
+                return Object.assign(Object.assign({}, prev), item);
+            }, {});
+            yield fs.writeFile(this.hashFilePath, JSON.stringify(res, null, '\t'));
         });
-    };
-    AppPullservice.prototype.loadFile = function (c) {
-        return __awaiter(this, void 0, void 0, function () {
-            var appDefUrl, url, data, res;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getAppDefUrl()];
-                    case 1:
-                        appDefUrl = _a.sent();
-                        url = "".concat(appDefUrl, "/get-app-content");
-                        data = {
-                            contentType: c.contentType,
-                            folder: c.folder,
-                            name: c.name,
-                            appName: this.appName,
-                            appOwnerName: this.ownerName
-                        };
-                        return [4 /*yield*/, axios__default["default"].post(url, data, {
-                                headers: authService.getAuthHeaders()
-                            })];
-                    case 2:
-                        res = _a.sent();
-                        return [2 /*return*/, res.data];
-                }
-            });
-        });
-    };
-    AppPullservice.prototype.saveFile = function (link) {
-        return __awaiter(this, void 0, void 0, function () {
-            var path, e_2;
-            var _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        path = this.getAbsFilePath(link);
-                        _b.label = 1;
-                    case 1:
-                        _b.trys.push([1, 4, , 5]);
-                        return [4 /*yield*/, createDirectory(path)];
-                    case 2:
-                        _b.sent();
-                        return [4 /*yield*/, fs.writeFile(path, link.content || '')];
-                    case 3:
-                        _b.sent();
-                        console.log("File loaded: ".concat(path));
-                        return [2 /*return*/, (_a = {}, _a[this.getFilePath(link)] = {
-                                hash: this.getHashCode(link.content),
-                                contentId: link.contentId
-                            }, _a)];
-                    case 4:
-                        e_2 = _b.sent();
-                        console.log(e_2);
-                        return [3 /*break*/, 5];
-                    case 5: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    return AppPullservice;
-}(AppService));
-var appPullService = new AppPullservice();var AppPushservice = /** @class */ (function (_super) {
-    __extends(AppPushservice, _super);
-    function AppPushservice() {
-        var _this = _super.call(this) || this;
-        createDirectory(_this.hashFilePath);
-        return _this;
     }
-    AppPushservice.prototype.pushApp = function (ownerName, appName) {
-        return __awaiter(this, void 0, void 0, function () {
-            var files_1, hashes_1, filesToPush, appDefUrl, e_1;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.setAppInfo(ownerName, appName);
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 8, , 9]);
-                        return [4 /*yield*/, this.getLocalAppFiles()];
-                    case 2:
-                        files_1 = (_a.sent()).flat(Infinity);
-                        return [4 /*yield*/, this.getHashCodes()];
-                    case 3:
-                        hashes_1 = _a.sent();
-                        return [4 /*yield*/, this.deleteFiles(files_1, hashes_1)];
-                    case 4:
-                        _a.sent();
-                        filesToPush = files_1.filter(function (f) {
-                            var _a;
-                            var p = _this.getFilePath(f);
-                            return ((_a = hashes_1[p]) === null || _a === void 0 ? void 0 : _a.hash) !== _this.getHashCode(f.content);
-                        });
-                        return [4 /*yield*/, Promise.all(filesToPush.map(function (fP) { return __awaiter(_this, void 0, void 0, function () {
-                                var pathHash, filePath, f;
-                                var _this = this;
-                                return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0: return [4 /*yield*/, this.saveFile(fP)];
-                                        case 1:
-                                            pathHash = _a.sent();
-                                            filePath = this.getFilePath(fP);
-                                            f = files_1.find(function (f) { return filePath === _this.getFilePath(f); });
-                                            f.contentId = pathHash[filePath].contentId;
-                                            return [2 /*return*/];
-                                    }
-                                });
-                            }); }))];
-                    case 5:
-                        _a.sent();
-                        return [4 /*yield*/, this.saveHashCodes(files_1.map(function (f) {
-                                var _a;
-                                return (_a = {}, _a[_this.getFilePath(f)] = {
-                                    hash: _this.getHashCode(f.content),
-                                    contentId: f.contentId
-                                }, _a);
-                            }))];
-                    case 6:
-                        _a.sent();
-                        return [4 /*yield*/, this.getAppDefUrl()];
-                    case 7:
-                        appDefUrl = _a.sent();
-                        console.log("Application ".concat(this.ownerName, ".").concat(this.appName, " loaded (").concat(appDefUrl, ")."));
-                        return [3 /*break*/, 9];
-                    case 8:
-                        e_1 = _a.sent();
-                        console.log(e_1.message);
-                        return [3 /*break*/, 9];
-                    case 9: return [2 /*return*/];
-                }
-            });
+    getHashCodes() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const hashesStr = yield fs.readFile(this.hashFilePath);
+            return JSON.parse(hashesStr.toString());
         });
-    };
-    AppPushservice.prototype.deleteFiles = function (files, hashes) {
-        return __awaiter(this, void 0, void 0, function () {
-            var filesMap;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        filesMap = new Map(files.map(function (f) { return ([_this.getFilePath(f), f]); }));
-                        return [4 /*yield*/, Promise.all(Object.keys(hashes)
-                                .filter(function (fPath) { return !filesMap.has(fPath); })
-                                .map(function (fPath) { return _this.deleteFile(_this.getAppLink(fPath)); }))];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
+    }
+    getAppDefUrl() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const baseUrl = yield configService.get('baseUrl');
+            return `${baseUrl}${this.APP_DEF_URL}`;
         });
-    };
-    AppPushservice.prototype.deleteFile = function (link) {
-        return __awaiter(this, void 0, void 0, function () {
-            var appDefUrl, url, res;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getAppDefUrl()];
-                    case 1:
-                        appDefUrl = _a.sent();
-                        url = "".concat(appDefUrl, "/delete-app-content");
-                        return [4 /*yield*/, axios__default["default"].post(url, __assign(__assign({}, link), { appOwnerName: this.ownerName, appName: this.appName }), {
-                                headers: authService.getAuthHeaders()
-                            })];
-                    case 2:
-                        res = _a.sent();
-                        console.log("".concat(this.getFilePath(link), " - deleted"), res.status);
-                        return [2 /*return*/, res.data];
-                }
-            });
+    }
+}class AppPullservice extends AppService {
+    loadApp(ownerName, appName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.setAppInfo(ownerName, appName);
+            yield createDirectory(this.hashFilePath);
+            yield removeDir(this.appDirPath);
+            const appDefUrl = yield this.getAppDefUrl();
+            const url = `${appDefUrl}/app-links/${this.ownerName}/${this.appName}`;
+            try {
+                const res = yield axios__default["default"].get(url, {
+                    headers: authService.getAuthHeaders()
+                });
+                const links = res.data;
+                const hashes = yield Promise.all(links.map((l) => __awaiter(this, void 0, void 0, function* () {
+                    const linkContent = yield this.loadFile(l);
+                    return yield this.saveFile(linkContent);
+                })));
+                yield this.saveHashCodes(hashes);
+                console.log(`Application ${this.ownerName}.${this.appName} loaded (${this.appDirPath}).`);
+            }
+            catch (e) {
+                console.log(e.message);
+            }
         });
-    };
-    AppPushservice.prototype.getLocalAppFiles = function (dir) {
-        if (dir === void 0) { dir = this.appDirPath; }
-        return __awaiter(this, void 0, void 0, function () {
-            var hashes, list;
-            var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getHashCodes()];
-                    case 1:
-                        hashes = _a.sent();
-                        return [4 /*yield*/, fs__default["default"].readdir(dir)];
-                    case 2:
-                        list = _a.sent();
-                        return [4 /*yield*/, Promise.all(list.map(function (file) { return __awaiter(_this, void 0, void 0, function () {
-                                var stat;
-                                return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0:
-                                            file = path__default["default"].resolve(dir, file);
-                                            return [4 /*yield*/, fs__default["default"].stat(file)];
-                                        case 1:
-                                            stat = _a.sent();
-                                            if (stat && stat.isDirectory()) {
-                                                return [2 /*return*/, this.getLocalAppFiles(file)];
-                                            }
-                                            else {
-                                                return [2 /*return*/, this.getAppLinkWithContent(dir, file, hashes)];
-                                            }
-                                    }
-                                });
-                            }); }))];
-                    case 3: return [2 /*return*/, _a.sent()];
-                }
+    }
+    loadFile(c) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const appDefUrl = yield this.getAppDefUrl();
+            const url = `${appDefUrl}/get-app-content`;
+            const data = {
+                contentType: c.contentType,
+                folder: c.folder,
+                name: c.name,
+                appName: this.appName,
+                appOwnerName: this.ownerName
+            };
+            const res = yield axios__default["default"].post(url, data, {
+                headers: authService.getAuthHeaders()
             });
+            return res.data;
         });
-    };
-    AppPushservice.prototype.getAppLinkWithContent = function (dir, fPath, hashes) {
-        return __awaiter(this, void 0, void 0, function () {
-            var folder, _a, name, extention, content, appLink;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        folder = removeStartingSlash(dir.replace(this.appDirPath, '')).replace(/\\/g, '/');
-                        _a = path__default["default"].basename(fPath).split('.'), name = _a[0], extention = _a.slice(1);
-                        return [4 /*yield*/, fs__default["default"].readFile(fPath)];
-                    case 1:
-                        content = (_b.sent()).toString();
-                        appLink = {
-                            name: removeStartingSlash(name),
-                            folder: folder,
-                            contentType: extention.join('.'),
-                            content: content
-                        };
-                        if (hashes[this.getFilePath(appLink)]) {
-                            appLink.contentId = hashes[this.getFilePath(appLink)].contentId;
-                        }
-                        return [2 /*return*/, appLink];
-                }
+    }
+    saveFile(link) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const path = this.getAbsFilePath(link);
+            try {
+                yield createDirectory(path);
+                yield fs.writeFile(path, link.content || '');
+                console.log(`File loaded: ${path}`);
+                return { [this.getFilePath(link)]: {
+                        hash: this.getHashCode(link.content),
+                        contentId: link.contentId
+                    } };
+            }
+            catch (e) {
+                console.log(e);
+            }
+        });
+    }
+}
+const appPullService = new AppPullservice();class AppPushservice extends AppService {
+    constructor() {
+        super();
+        createDirectory(this.hashFilePath);
+    }
+    pushApp(ownerName, appName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.setAppInfo(ownerName, appName);
+            try {
+                const files = (yield this.getLocalAppFiles()).flat(Infinity);
+                const hashes = yield this.getHashCodes();
+                yield this.deleteFiles(files, hashes);
+                const filesToPush = files.filter(f => {
+                    var _a;
+                    const p = this.getFilePath(f);
+                    return ((_a = hashes[p]) === null || _a === void 0 ? void 0 : _a.hash) !== this.getHashCode(f.content);
+                });
+                yield Promise.all(filesToPush.map((fP) => __awaiter(this, void 0, void 0, function* () {
+                    const pathHash = yield this.saveFile(fP);
+                    const filePath = this.getFilePath(fP);
+                    const f = files.find(f => filePath === this.getFilePath(f));
+                    f.contentId = pathHash[filePath].contentId;
+                })));
+                yield this.saveHashCodes(files.map(f => ({ [this.getFilePath(f)]: {
+                        hash: this.getHashCode(f.content),
+                        contentId: f.contentId
+                    } })));
+                const appDefUrl = yield this.getAppDefUrl();
+                console.log(`Application ${this.ownerName}.${this.appName} loaded (${appDefUrl}).`);
+            }
+            catch (e) {
+                console.log(e.message);
+            }
+        });
+    }
+    deleteFiles(files, hashes) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const filesMap = new Map(files.map(f => ([this.getFilePath(f), f])));
+            yield Promise.all(Object.keys(hashes)
+                .filter(fPath => !filesMap.has(fPath))
+                .map(fPath => this.deleteFile(this.getAppLink(fPath))));
+        });
+    }
+    deleteFile(link) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const appDefUrl = yield this.getAppDefUrl();
+            const url = `${appDefUrl}/delete-app-content`;
+            const res = yield axios__default["default"].post(url, Object.assign(Object.assign({}, link), { appOwnerName: this.ownerName, appName: this.appName }), {
+                headers: authService.getAuthHeaders()
             });
+            console.log(`${this.getFilePath(link)} - deleted`, res.status);
+            return res.data;
         });
-    };
-    AppPushservice.prototype.getAppLink = function (filePath) {
-        var fPath = filePath.replace(this.appDir, '');
-        var src = fPath.split('/');
-        var file = src.pop();
-        var dotIndex = file.indexOf('.');
-        var contentType = file.substring(dotIndex + 1);
-        var name = file.substring(0, dotIndex);
-        var folder = src.join('/');
-        var appLink = {
-            name: name,
-            folder: folder,
-            contentType: contentType
+    }
+    getLocalAppFiles(dir = this.appDirPath) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const hashes = yield this.getHashCodes();
+            const list = yield fs__default["default"].readdir(dir);
+            return yield Promise.all(list.map((file) => __awaiter(this, void 0, void 0, function* () {
+                file = path__default["default"].resolve(dir, file);
+                const stat = yield fs__default["default"].stat(file);
+                if (stat && stat.isDirectory()) {
+                    return this.getLocalAppFiles(file);
+                }
+                else {
+                    return this.getAppLinkWithContent(dir, file, hashes);
+                }
+            })));
+        });
+    }
+    getAppLinkWithContent(dir, fPath, hashes) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let folder = removeStartingSlash(dir.replace(this.appDirPath, '')).replace(/\\/g, '/');
+            let [name, ...extention] = path__default["default"].basename(fPath).split('.');
+            const content = (yield fs__default["default"].readFile(fPath)).toString();
+            const appLink = {
+                name: removeStartingSlash(name),
+                folder,
+                contentType: extention.join('.'),
+                content
+            };
+            if (hashes[this.getFilePath(appLink)]) {
+                appLink.contentId = hashes[this.getFilePath(appLink)].contentId;
+            }
+            return appLink;
+        });
+    }
+    getAppLink(filePath) {
+        const fPath = filePath.replace(this.appDir, '');
+        const src = fPath.split('/');
+        const file = src.pop();
+        const dotIndex = file.indexOf('.');
+        const contentType = file.substring(dotIndex + 1);
+        const name = file.substring(0, dotIndex);
+        const folder = src.join('/');
+        const appLink = {
+            name,
+            folder,
+            contentType
         };
         return appLink;
-    };
-    AppPushservice.prototype.saveFile = function (link) {
-        return __awaiter(this, void 0, void 0, function () {
-            var appDefUrl, url, appLink, res, path_1, status_1, e_2;
-            var _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.getAppDefUrl()];
-                    case 1:
-                        appDefUrl = _b.sent();
-                        url = "".concat(appDefUrl, "/save-app-content");
-                        appLink = this.getSaveAppLink(link);
-                        _b.label = 2;
-                    case 2:
-                        _b.trys.push([2, 4, , 5]);
-                        return [4 /*yield*/, axios__default["default"].post(url, appLink, {
-                                headers: authService.getAuthHeaders()
-                            })];
-                    case 3:
-                        res = _b.sent();
-                        path_1 = this.getFilePath(link);
-                        status_1 = link.contentId ? 'saved' : 'created';
-                        console.log("".concat(path_1, " - ").concat(status_1), res.status);
-                        return [2 /*return*/, (_a = {}, _a[path_1] = {
-                                hash: this.getHashCode(link.content),
-                                contentId: res.data
-                            }, _a)];
-                    case 4:
-                        e_2 = _b.sent();
-                        console.log(e_2.message);
-                        return [3 /*break*/, 5];
-                    case 5: return [2 /*return*/];
-                }
-            });
+    }
+    saveFile(link) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const appDefUrl = yield this.getAppDefUrl();
+            const url = `${appDefUrl}/save-app-content`;
+            const appLink = this.getSaveAppLink(link);
+            try {
+                const res = yield axios__default["default"].post(url, appLink, {
+                    headers: authService.getAuthHeaders()
+                });
+                const path = this.getFilePath(link);
+                const status = link.contentId ? 'saved' : 'created';
+                console.log(`${path} - ${status}`, res.status);
+                return { [path]: {
+                        hash: this.getHashCode(link.content),
+                        contentId: res.data
+                    } };
+            }
+            catch (e) {
+                console.log(e.message);
+            }
         });
-    };
-    AppPushservice.prototype.getSaveAppLink = function (link) {
-        var saveLink = {
+    }
+    getSaveAppLink(link) {
+        const saveLink = {
             appOwnerName: this.ownerName,
             appName: this.appName,
             appContent: {
@@ -811,132 +470,80 @@ var appPullService = new AppPullservice();var AppPushservice = /** @class */ (fu
             saveLink.appContent.contentId = link.contentId;
         }
         return saveLink;
-    };
-    return AppPushservice;
-}(AppService));
-var appPushService = new AppPushservice();require('dotenv').config();
+    }
+}
+const appPushService = new AppPushservice();require('dotenv').config();
 console.log('Worksheets CLI (c) 2021 FalconSoft Ltd. All rights reserved.');
-var commands = ['auth', 'pull', 'push', 'config'];
+const commands = ['auth', 'pull', 'push', 'config'];
 function main() {
-    return __awaiter(this, void 0, void 0, function () {
-        var argv, argComangs, useMessage, version, _a;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    argv = getArgv();
-                    argComangs = argv._;
-                    useMessage = "Use one of the commands: ".concat(commands.join(', '));
-                    if (argComangs.length === 0 && argv.version) {
-                        version = require('../package.json').version;
-                        console.log(version);
-                        process.exit();
-                    }
-                    if (argComangs.length !== 1 || !commands.includes(argComangs[0])) {
-                        console.log(useMessage);
-                        process.exit();
-                    }
-                    _a = argComangs[0];
-                    switch (_a) {
-                        case 'auth': return [3 /*break*/, 1];
-                        case 'pull': return [3 /*break*/, 3];
-                        case 'push': return [3 /*break*/, 5];
-                        case 'config': return [3 /*break*/, 7];
-                    }
-                    return [3 /*break*/, 9];
-                case 1: return [4 /*yield*/, authService.login(argv.username, argv.password)];
-                case 2:
-                    _b.sent();
-                    return [3 /*break*/, 10];
-                case 3: return [4 /*yield*/, pull(argv)];
-                case 4:
-                    _b.sent();
-                    return [3 /*break*/, 10];
-                case 5: return [4 /*yield*/, push(argv)];
-                case 6:
-                    _b.sent();
-                    return [3 /*break*/, 10];
-                case 7: return [4 /*yield*/, config(argv)];
-                case 8:
-                    _b.sent();
-                    return [3 /*break*/, 10];
-                case 9:
-                    console.log("Incorrect command ".concat(argComangs[0], ". ").concat(useMessage));
-                    _b.label = 10;
-                case 10:
-                    process.exit();
-                    return [2 /*return*/];
-            }
-        });
+    return __awaiter(this, void 0, void 0, function* () {
+        let argv = getArgv();
+        const argComangs = argv._;
+        const useMessage = `Use one of the commands: ${commands.join(', ')}`;
+        if (argComangs.length === 0 && argv.version) {
+            const version = require('../package.json').version;
+            console.log(version);
+            process.exit();
+        }
+        if (argComangs.length !== 1 || !commands.includes(argComangs[0])) {
+            console.log(useMessage);
+            process.exit();
+        }
+        switch (argComangs[0]) {
+            case 'auth':
+                yield authService.login(argv.username, argv.password);
+                break;
+            case 'pull':
+                yield pull(argv);
+                break;
+            case 'push':
+                yield push(argv);
+                break;
+            case 'config':
+                yield config(argv);
+                break;
+            default: console.log(`Incorrect command ${argComangs[0]}. ${useMessage}`);
+        }
+        process.exit();
     });
 }
 function getConfig(argv) {
-    return __awaiter(this, void 0, void 0, function () {
-        var config_1, _a, owner, app;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    if (!!argv.app) return [3 /*break*/, 2];
-                    return [4 /*yield*/, configService.get()];
-                case 1:
-                    config_1 = _b.sent();
-                    if (config_1.owner && config_1.app) {
-                        console.log("Application: ".concat(config_1.owner, "/").concat(config_1.app));
-                    }
-                    return [2 /*return*/, config_1];
-                case 2:
-                    _a = argv.app.split('/'), owner = _a[0], app = _a[1];
-                    return [4 /*yield*/, configService.save({ owner: owner, app: app })];
-                case 3: return [2 /*return*/, _b.sent()];
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!argv.app) {
+            const config = yield configService.get();
+            if (config.owner && config.app) {
+                console.log(`Application: ${config.owner}/${config.app}`);
             }
-        });
+            return config;
+        }
+        else {
+            const [owner, app] = argv.app.split('/');
+            return yield configService.save({ owner, app });
+        }
     });
 }
 function pull(argv) {
-    return __awaiter(this, void 0, void 0, function () {
-        var isAuth, config_2;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, authService.authenticate()];
-                case 1:
-                    isAuth = _a.sent();
-                    if (!isAuth) return [3 /*break*/, 4];
-                    return [4 /*yield*/, getConfig(argv)];
-                case 2:
-                    config_2 = _a.sent();
-                    return [4 /*yield*/, appPullService.loadApp(config_2.owner, config_2.app)];
-                case 3:
-                    _a.sent();
-                    return [3 /*break*/, 5];
-                case 4:
-                    console.log('Login to be able to pull apps.');
-                    _a.label = 5;
-                case 5: return [2 /*return*/];
-            }
-        });
+    return __awaiter(this, void 0, void 0, function* () {
+        const isAuth = yield authService.authenticate();
+        if (isAuth) {
+            const config = yield getConfig(argv);
+            yield appPullService.loadApp(config.owner, config.app);
+        }
+        else {
+            console.log('Login to be able to pull apps.');
+        }
     });
 }
 function push(argv) {
-    return __awaiter(this, void 0, void 0, function () {
-        var isAuth, config_3;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, authService.authenticate()];
-                case 1:
-                    isAuth = _a.sent();
-                    if (!isAuth) return [3 /*break*/, 4];
-                    return [4 /*yield*/, getConfig(argv)];
-                case 2:
-                    config_3 = _a.sent();
-                    return [4 /*yield*/, appPushService.pushApp(config_3.owner, config_3.app)];
-                case 3:
-                    _a.sent();
-                    return [3 /*break*/, 5];
-                case 4:
-                    console.log('Login to be able to push apps.');
-                    _a.label = 5;
-                case 5: return [2 /*return*/];
-            }
-        });
+    return __awaiter(this, void 0, void 0, function* () {
+        const isAuth = yield authService.authenticate();
+        if (isAuth) {
+            const config = yield getConfig(argv);
+            yield appPushService.pushApp(config.owner, config.app);
+        }
+        else {
+            console.log('Login to be able to push apps.');
+        }
     });
 }
 function getArgv() {
@@ -946,7 +553,7 @@ function getArgv() {
         description: 'Application version',
         type: 'boolean'
     })
-        .command('auth', "Authenticate.", function (yargs) { return yargs.option('username', {
+        .command('auth', "Authenticate.", (yargs) => yargs.option('username', {
         alias: 'u',
         describe: "Username in worksheet.systems",
         type: 'string'
@@ -954,45 +561,36 @@ function getArgv() {
         alias: 'p',
         hidden: true,
         type: 'string'
-    }); }).command('pull', "Pull application.", function (yargs) { return yargs.option('app', {
+    })).command('pull', "Pull application.", (yargs) => yargs.option('app', {
         alias: 'a',
         describe: 'Application name (Owner/AppName)',
         type: 'string'
-    }); }).command('push', "Push application.", function (yargs) { return yargs.option('app', {
+    })).command('push', "Push application.", (yargs) => yargs.option('app', {
         alias: 'a',
         describe: 'Application name (Owner/AppName)',
         type: 'string'
-    }); }).command('config', "Set configurations.", function (yargs) { return yargs.option('baseUrl', {
+    })).command('config', "Set configurations.", (yargs) => yargs.option('baseUrl', {
         describe: 'Worksheets API url.',
         type: 'string'
     }).option('app', {
         alias: 'a',
         describe: 'Application name (Owner/AppName)',
         type: 'string'
-    }); }).argv;
+    })).argv;
 }
 function config(argv) {
-    return __awaiter(this, void 0, void 0, function () {
-        var config, _a, owner, app;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    config = {};
-                    if (argv.baseUrl) {
-                        config.baseUrl = argv.baseUrl;
-                    }
-                    if (argv.app) {
-                        _a = argv.app.split('/'), owner = _a[0], app = _a[1];
-                        config.app = app;
-                        config.owner = owner;
-                    }
-                    return [4 /*yield*/, configService.save(config)];
-                case 1:
-                    _b.sent();
-                    console.log('Configurations updated.');
-                    return [2 /*return*/];
-            }
-        });
+    return __awaiter(this, void 0, void 0, function* () {
+        const config = {};
+        if (argv.baseUrl) {
+            config.baseUrl = argv.baseUrl;
+        }
+        if (argv.app) {
+            const [owner, app] = argv.app.split('/');
+            config.app = app;
+            config.owner = owner;
+        }
+        yield configService.save(config);
+        console.log('Configurations updated.');
     });
 }
 try {

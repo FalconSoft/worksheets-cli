@@ -1,18 +1,31 @@
 import axios, { AxiosResponse } from "axios";
+import { Interpreter } from "jspython-interpreter";
 import { setBearerToken, setBaseUrl } from "sql-data-api";
 import { AppContentInfo, AppLink } from "../models/app.interfaces";
 import { authService } from "../services/auth";
 import { DEFAULT_BASE_URL } from "../services/config";
+import { Assert } from "./assert";
 import { getInterpreter } from "./interpreter";
 import { RunnerConfig } from "./types";
 import { toContentPath } from "./utils";
 
 setBaseUrl(DEFAULT_BASE_URL);
 
+type AssertInfo = { success: boolean; name: string; description?: string };
+type LogInfo = {
+  level: "info" | "fail" | "success";
+  message: string;
+  time: Date;
+  logId?: string;
+};
+
 export class WorksheetsRunner {
   private auth: Promise<boolean>;
   private appOwner: string;
   private appName: string;
+  private asserts: AssertInfo[] = [];
+  private logLines: string[] = [];
+  private previousLogMessage = "";
 
   constructor(private config: RunnerConfig) {}
 
@@ -32,19 +45,139 @@ export class WorksheetsRunner {
       });
   }
 
+  private assert(name: string, dataContext?: boolean | any): Assert | void {
+    // an original case when
+    if (typeof dataContext === "boolean") {
+      this.logFn({
+        level: dataContext ? "success" : "fail",
+        message: name || "",
+        time: new Date(),
+      });
+      this.asserts.push({ success: !!dataContext, name });
+      return;
+    }
+
+    const assertCallback = (success: boolean, message: string) => {
+      this.logFn({
+        logId: name,
+        level: success ? "success" : "fail",
+        message: `${name} ${message ? ":" : ""} ${message || ""}`,
+        time: new Date(),
+      });
+
+      const existingAssert = this.asserts?.find(
+        (a: AssertInfo) => a.name === name
+      );
+      if (existingAssert) {
+        // only if condition it is not fail yet
+        if (!!existingAssert.success) {
+          existingAssert.success = !!success;
+          existingAssert.description = message;
+        }
+      } else {
+        this.asserts.push({
+          success: !!success,
+          name: name,
+          description: message,
+        });
+      }
+    };
+
+    return new Assert(name, dataContext, assertCallback);
+  }
+
+  private logFn(msg: LogInfo): void {
+    const level = msg.level === "success" ? msg.level : msg.level + "   ";
+    const message = `${level} | ${msg.message}`;
+
+    if (message !== this.previousLogMessage) {
+      this.logLines.push(
+        `| ${msg.time.toTimeString().slice(0, 8)} | ${message}`
+      );
+      this.previousLogMessage = message;
+    }
+  }
+
+  private assignFunctions(interpreter: Interpreter): void {
+    interpreter.addFunction("print", (...args: any[]) => {
+      console.log(...args);
+      const message = args
+        .map((v) => (typeof v === "object" ? JSON.stringify(v) : String(v)))
+        .join(", ");
+      this.logFn({
+        level: "info",
+        message,
+        time: new Date(),
+      });
+
+      return args.length > 0 ? args[0] : null;
+    });
+
+    interpreter.addFunction("assert", (name: string, dataContext: any) =>
+      this.assert(name, dataContext)
+    );
+
+    interpreter.addFunction("showAsserts", () =>
+      this.asserts.forEach((r) =>
+        this.logFn({
+          time: new Date(),
+          level: "info",
+          message: `${r.success ? "success" : "fail   "} | ${r.name}${
+            !!r.description ? ": " : ""
+          }${r.description || ""}`.trim(),
+        })
+      )
+    );
+  }
   async run(
     appPath: string,
     filePath: string,
     functionName?: string
-  ): Promise<any> {
-    
+  ): Promise<{ log: string; result?: any; error?: string }> {
+    this.logLines = [];
     this.setAppPath(appPath);
     const file = (await this.loadFileContent(filePath)).data.content;
-
     const interpreter = getInterpreter(async (link) => this.moduleLoader(link));
-    const context = { appName: this.appName, appOwner: this.appOwner };
 
-    return interpreter.evaluate(file, context, functionName);
+    this.assignFunctions(interpreter);
+    const context = {
+      __env: {
+        args: {},
+        entryModule: filePath,
+        entryFunction: functionName || "",
+        runsAt: "task-scheduller",
+      },
+    };
+
+    try {
+      this.logLines.push(interpreter.jsPythonInfo());
+      this.logLines.push(`> ${filePath}`);
+
+      const result = await interpreter.evaluate(
+        file,
+        context,
+        functionName,
+        filePath
+      );
+
+      if (this.asserts?.length) {
+        this.logLines.push(
+          `  > assert success : ${this.asserts.filter((a) => a.success).length}`
+        );
+        this.logLines.push(
+          `  > assert failed  : ${
+            this.asserts.filter((a) => !a.success).length
+          }`
+        );
+      }
+
+      return {
+        log: this.logLines.join("\n"),
+        result,
+      };
+    } catch (ex) {
+      return { error: (ex as any).message, log: this.logLines.join("\n") };
+    }
   }
 
   async getScheduledTasks(days?: string, time?: string) {

@@ -1,86 +1,87 @@
-import { Interpreter, jsPython, ModuleLoader, PackageLoader } from 'jspython-interpreter';
-import * as dataPipe from 'datapipe-js';
-import * as dpString from 'datapipe-js/string';
-import * as dpUtils from 'datapipe-js/utils';
-import * as dpArray from 'datapipe-js/array';
+import {
+  Interpreter,
+  jsPython,
+  ModuleLoader,
+  PackageLoader,
+} from "jspython-interpreter";
+import * as dataPipe from "datapipe-js";
+import * as dpString from "datapipe-js/string";
+import * as dpUtils from "datapipe-js/utils";
+import * as dpArray from "datapipe-js/array";
 // import * as sqlDataApi from 'sql-data-api';
-const sqlDataApi = require('sql-data-api');
-import * as rxjs from 'rxjs';
-import * as axios from 'axios';
-import { DEFAULT_BASE_URL } from '../services/config';
+const sqlDataApi = require("sql-data-api");
+import * as rxjs from "rxjs";
+import * as axios from "axios";
+import { DEFAULT_BASE_URL } from "../services/config";
+import { parseDatetimeOrNull } from "datapipe-js/utils";
+import { from } from "rxjs";
 
 sqlDataApi.setBaseUrl(DEFAULT_BASE_URL);
 
 const AVAILABLE_PACKAGES: Record<string, any> = {
-  'datapipe-js': dataPipe,
-  'datapipe-js/utils': dpUtils,
-  'datapipe-js/array': dpArray,
-  'datapipe-js/string': dpString,
-  'sql-data-api': sqlDataApi,
+  "datapipe-js": dataPipe,
+  "datapipe-js/utils": dpUtils,
+  "datapipe-js/array": dpArray,
+  "datapipe-js/string": dpString,
+  "sql-data-api": sqlDataApi,
   rxjs,
   axios,
-  'rxjs/factory': {
+  "rxjs/factory": {
     createSubject: () => new rxjs.Subject(),
     createAsyncSubject: () => new rxjs.AsyncSubject(),
     createBehaviorSubject: (v: any) => new rxjs.BehaviorSubject(v),
-    createReplaySubject: (v: any) => new rxjs.ReplaySubject(v)
-  }
+    createReplaySubject: (v: any) => new rxjs.ReplaySubject(v),
+  },
 };
 
 export const mapFunction = new Map<string, (...args: any[]) => any>([
-  ['typeof', val => typeof val],
-
+  ["typeof", (val) => typeof val],
   [
-    'httpGet',
-    (url: string, headers?: Record<string, string>) => sqlDataApi.httpGet(url, { ...headers })
-  ],
-
-  [
-    'httpGetText',
-    (url: string, headers?: Record<string, string>) => sqlDataApi.httpGetText(url, headers)
-  ],
-
-  [
-    'httpRequest',
-    (method: string, url: string, body, headers?: Record<string, string>) =>
-      sqlDataApi.httpRequest(method, url, body, headers)
-  ],
-
-  [
-    'httpPost',
-    (url: string, body, headers?: Record<string, string>) =>
-      sqlDataApi.httpPost(url, body, { ...headers })
-  ],
-
-  [
-    'httpPut',
-    (url: string, body, headers?: Record<string, string>) =>
-      sqlDataApi.httpPut(url, body, { ...headers })
-  ],
-
-  [
-    'httpDelete',
+    "httpGet",
     (url: string, headers?: Record<string, string>) =>
-      sqlDataApi.httpDelete(url, undefined, { ...headers })
+      sqlDataApi.httpGet(url, { ...headers }),
   ],
-
-  ['parseInt', parseInt],
-
-  ['parseFloat', parseFloat],
-
-  // ['fetch', fetch],
-
-  // [
-  //   'dateTime',
-  //   str => (str && str.length ? dpUtils.parseDatetimeOrNull(str) || new Date() : new Date())
-  // ],
   [
-    'setQueryParameters',
+    "httpGetText",
+    (url: string, headers?: Record<string, string>) =>
+      sqlDataApi.httpGetText(url, headers),
+  ],
+  [
+    "httpRequest",
+    (method: string, url: string, body, headers?: Record<string, string>) =>
+      sqlDataApi.httpRequest(method, url, body, headers),
+  ],
+  [
+    "httpPost",
+    (url: string, body, headers?: Record<string, string>) =>
+      sqlDataApi.httpPost(url, body, { ...headers }),
+  ],
+  [
+    "httpPut",
+    (url: string, body, headers?: Record<string, string>) =>
+      sqlDataApi.httpPut(url, body, { ...headers }),
+  ],
+  [
+    "httpDelete",
+    (url: string, headers?: Record<string, string>) =>
+      sqlDataApi.httpDelete(url, undefined, { ...headers }),
+  ],
+  ["httpGet$", (url, c) => from(sqlDataApi.httpGet(url, c))],
+  ["httpRequest$", (url, p, c) => from(sqlDataApi.httpRequest(url, p, c))],
+  ["parseInt", parseInt],
+  ["parseFloat", parseFloat],
+  [
+    "dateTime",
+    (value, format) => parseDatetimeOrNull(value, format) || new Date(),
+  ],
+  [
+    "setQueryParameters",
     (search: string) => {
-      const url = location.pathname + (search.startsWith('?') ? search : `?${search}`);
-      window.history.pushState({}, '', url);
-    }
-  ]
+      const url =
+        location.pathname + (search.startsWith("?") ? search : `?${search}`);
+      window.history.pushState({}, "", url);
+    },
+  ],
 ]);
 
 export function getAvailableJspyPackagesList(): string[] {
@@ -95,8 +96,11 @@ export function getAvailableJspyPackage(name: string): any {
   return AVAILABLE_PACKAGES[name];
 }
 
-export function registerFunction(name: string, func: (...args: any[]) => any): void {
-  if (name && typeof func === 'function') {
+export function registerFunction(
+  name: string,
+  func: (...args: any[]) => any
+): void {
+  if (name && typeof func === "function") {
     mapFunction.set(name, func);
   } else {
     throw Error(`registerFunction: incorrect parameters: ${name}, ${func}`);
@@ -104,11 +108,12 @@ export function registerFunction(name: string, func: (...args: any[]) => any): v
 }
 
 export function getInterpreter(
-  jspyModuleLoader: ModuleLoader = _ => Promise.resolve('')
+  jspyModuleLoader: ModuleLoader = (_) => Promise.resolve("")
 ): Interpreter {
   const interpreter = jsPython()
     .registerPackagesLoader(packageLoader as PackageLoader)
-    .registerModuleLoader(jspyModuleLoader);
+    .registerModuleLoader(jspyModuleLoader)
+    .assignGlobalContext({});
 
   addFunctions(interpreter);
   return interpreter;
@@ -116,7 +121,7 @@ export function getInterpreter(
 
 function addFunctions(interpreter: Interpreter): void {
   mapFunction.forEach((func: any, name) => {
-    func['interpreter'] = interpreter;
+    func["interpreter"] = interpreter;
     interpreter.addFunction(name, func);
   });
 }
