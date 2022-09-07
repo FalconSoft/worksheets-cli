@@ -230,15 +230,17 @@ export class WorksheetsRunner {
     taskStatusId: number,
     status: number,
     result: string
-  ): Promise<void> {
+  ): Promise<string> {
     const url = `${DEFAULT_BASE_URL}/api/scheduled-tasks/end`;
-    await axios.put<unknown>(
-      url,
-      { taskStatusId, status, result },
-      {
-        headers: authService.getAuthHeaders(),
-      }
-    );
+    return (
+      await axios.put<string>(
+        url,
+        { taskStatusId, status, result },
+        {
+          headers: authService.getAuthHeaders(),
+        }
+      )
+    ).data;
   }
 
   private async moduleLoader(link: string): Promise<string> {
